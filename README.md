@@ -1,4 +1,4 @@
-# DL4CropClassification
+# Crop Classification using ConvLSTM and inception base deep learning model
 Crop classification is one of the most important applications of remote sensing. Deep learning is useful for ....
 
 ## Requirements
