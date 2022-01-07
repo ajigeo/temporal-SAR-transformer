@@ -15,10 +15,11 @@ physical_devices = tf.config.list_physical_devices("GPU")
 
 ## Training
 
-```
-pip install tensorflow
+```python
+my_fused_model = fused_model()
 ```
 
+The model can be saved as .h5 file. The h5 file can be loaded to classify the entire scene of S1+S2 images
 ## Model Evaluation
 
 ## How to cite us?
