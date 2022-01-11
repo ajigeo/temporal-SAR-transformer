@@ -25,9 +25,14 @@ All the libraries required for executing this code is shared as a yaml file. It 
 ```
 conda env create -f environment.yml
 ```
-To enable GPU and get the list of GPUs available, add the following code at the beginning
+
+## Usage
+The code was run in Windows 10.
+Run the first 5 cells, to import the libraries, read the training data, preprocess it, building the DL model and fit the model.
+
+To plot the training accuracy and loss,
 ```python
-tf.config.run_functions_eagerly(True)
-physical_devices = tf.config.list_physical_devices("GPU")
+from utils import plot_performance
+plot_performance(model_history, 'Classification Model Performance')
 ```
 
