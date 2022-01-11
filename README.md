@@ -2,16 +2,16 @@
 
 ## Requirements
 ```
-python 3.9.7
-tensorflow 2.5.0
-keras 2.4.3
-sklearn 0.24.2
-imblearn 0.8.0
-numpy 1.21.2
-pandas 1.3.3
-matplotlib 3.4.3
-seaborn 0.11.2
-gdal 3.3.2
+python=3.9.7
+tensorflow=2.5.0
+keras=2.4.3
+sklearn=0.24.2
+imblearn=0.8.0
+numpy=1.21.2
+pandas=1.3.3
+matplotlib=3.4.3
+seaborn=0.11.2
+gdal=3.3.2
 ```
 ## Installation
 
