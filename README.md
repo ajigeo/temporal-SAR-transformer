@@ -1,4 +1,4 @@
-# Crop Classification Using Multitemporal Sentinel Images by 1D Convolutional LSTM Model
+# Transformer based temporal SAR and multispectral data fusion for crop classification
 
 ## Requirements
 ```
@@ -36,8 +36,8 @@ To call the model and train the data,
 from models import complex_fused_model
 
 model_history = my_fused_model.fit(
-	x=[X_train_vh, X_train_vv, X_train_mss], y=y_train,
-	validation_data=([X_val_vh, X_val_vv, X_val_mss], y_val),
+	x=[X_train_vv, X_train_vh, X_train_mss], y=y_train,
+	validation_data=([X_val_vv, X_val_vh, X_val_mss], y_val),
 	epochs=EPOCHS,batch_size=BATCH_SIZE,
     callbacks=[model_checkpoint])
 ```  
