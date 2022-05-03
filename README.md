@@ -16,13 +16,13 @@ gdal=3.3.2
 ## Installation
 
 Run the code below to clone the repository to your local machine and change it to your working directory.
-```
+```shell
 git clone https://github.com/ajigeo/convlstm-classification.git
 cd convlstm-classification
 ```
 
 All the libraries required for executing this code is shared as a yaml file. It can be installed by running the command,
-```
+```shell
 conda env create -f environment.yml
 ```
 
