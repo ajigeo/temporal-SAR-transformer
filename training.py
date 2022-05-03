@@ -1,5 +1,5 @@
 #importing the packages
-from models import complex_fused_model
+from models import fusion_transformer
 from keras.utils.vis_utils import plot_model
 from keras.callbacks import ModelCheckpoint
 from utils import preprocessing_split, plot_performance, model_metrics
@@ -7,13 +7,12 @@ import pandas as pd
 import numpy as np
 
 #%% importing the training and testing data
-train_data = pd.read_csv('train_points.csv')
-test_data = pd.read_csv('test_points.csv')
+train_data = pd.read_csv('E:/GT/clean_merge_train_points.csv')
+test_data = pd.read_csv('E:/GT/clean_merge_test_points.csv')
 crop_variables = train_data.columns[1:]
-#indices_bands = ['ndvi', 'ppr', 'pvr', 'sipi', 'gndvi', 'lci', 'ndsi', 'ndre','ndii', 'ndwi']
-vv_bands =  list(train_data.columns[23:39:2]) #['vv1','vv2','vv3','vv4','vv5','vv6','vv7','vv8']
-vh_bands = list(train_data.columns[24:40:2]) #['vh1','vh2','vh3','vh4','vh5','vh6','vh7','vh8']
-mss_bands = list(train_data.columns[1:13]) #['b1','b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8', 'b8a','b10','b11','b12']
+vv_bands = ['vv1','vv2','vv3','vv4','vv5','vv6','vv7','vv8']
+vh_bands = ['vh1','vh2','vh3','vh4','vh5','vh6','vh7','vh8']
+mss_bands = ['b1','b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8', 'b8a','b10','b11','b12']
 
 #%% preprocessing the training data
 X_train_vh, X_val_vh, X_test_vh, y_train, y_val,y_test = preprocessing_split(vh_bands,train_data,test_data)
@@ -21,32 +20,35 @@ X_train_vv, X_val_vv, X_test_vv, _, _, _ = preprocessing_split(vv_bands,train_da
 X_train_mss, X_val_mss, X_test_mss, _, _, _ = preprocessing_split(mss_bands,train_data,test_data)
 
 #%% calling the model
-my_fused_model = complex_fused_model()
-plot_model(my_fused_model, to_file='multiple_inputs.png', show_shapes=True,show_layer_names=False)
+model = fusion_transformer(head_size=64,num_heads=4,ff_dim=16,num_transformer_blocks=5,mlp_units=[128,64],mlp_dropout=0.1,dropout=0.1)
+plot_model(model, to_file='fused_transformer_new.png', show_shapes=True,show_layer_names=True)
 
 #%% Training the data with the model
-mc_fused = ModelCheckpoint('fused_inception.h5', monitor='val_accuracy', mode='max', verbose=0, save_best_only=True)
+mc_fused = ModelCheckpoint('fused_transformer.h5', monitor='val_accuracy', mode='max', verbose=0, save_best_only=True)
 
-EPOCHS = 100
-BATCH_SIZE = 643
+EPOCHS = 500
+BATCH_SIZE = 512
 
-fused_model_history = my_fused_model.fit(
-	x=[X_train_vh, X_train_vv, X_train_mss], y=y_train,
-	validation_data=([X_val_vh, X_val_vv, X_val_mss], y_val),
-	epochs=EPOCHS,batch_size=BATCH_SIZE,
-    callbacks=[mc_fused])
+fused_model_history = model.fit(
+    [X_train_vv,X_train_vh,X_train_mss],
+    y_train,
+    validation_split=0.2,
+    epochs=EPOCHS,
+    batch_size=BATCH_SIZE,
+    callbacks=mc_fused
+)
 
 #%% Plot the accuracy and loss
-plot_performance(fused_model_history, 'SAR Model Performance')
+plot_performance(fused_model_history, 'Model Performance')
 
 #%% Predicting using the test data
-fused_preds = my_fused_model.predict([X_test_vh,X_test_vv,X_test_mss])
+fused_preds = model.predict([X_test_vv,X_test_vh,X_test_mss])
 fused_predictions = fused_preds.argmax(1)
 
 #%% Calculateing the accuracy, kappa and F1 scores
-sar_acc, sar_kappa, sar_table = model_metrics(fused_predictions,y_test)
-print("Accuracy: " + str(sar_acc))
-print("Kappa: " + str(sar_kappa))
+acc, kappa, table = model_metrics(fused_predictions,y_test)
+print("Accuracy: " + str(acc))
+print("Kappa: " + str(kappa))
 
 #%% Get the class labels and plot the Confusion matrix
 from utils import get_crop_classes, confusion_matrix
@@ -113,7 +115,7 @@ vh_stacked = np.dstack((vh1,vh2,vh3,vh4,vh5,vh6,vh7,vh8))
 reshaped_vh_stack = vh_stacked.reshape(vh_stacked.shape[0]*vh_stacked.shape[1],8,1)
 
 #%%  Predicting Rasters
-raster_preds = my_fused_model.predict([reshaped_vh_stack,reshaped_vv_stack,reshaped_mss_stack])
+raster_preds = model.predict([reshaped_vv_stack,reshaped_vh_stack,reshaped_mss_stack])
 fusion_plot = raster_preds.argmax(1)
 reshaped_fusion_plot = fusion_plot.reshape(raster_bands.shape[0],raster_bands.shape[1])
 
