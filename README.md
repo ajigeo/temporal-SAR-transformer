@@ -33,7 +33,7 @@ Run the first 5 cells of `training.py`, to import the libraries, read the traini
 ### Building the model
 To call the model and train the data,
 ```python
-from models import complex_fused_model
+from models import fusion_transformer
 
 model_history = my_fused_model.fit(
 	x=[X_train_vv, X_train_vh, X_train_mss], y=y_train,
