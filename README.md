@@ -27,7 +27,6 @@ conda env create -f environment.yml
 ```
 
 ## Usage
-The code was run in Windows 10.
 Run the first 5 cells of `training.py`, to import the libraries, read the training data, preprocess it, building the DL model and fit the model.
 
 ### Building the model
